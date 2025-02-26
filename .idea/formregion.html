@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Region</title>
+    <link rel="stylesheet" href="css/formstyle.css">
+</head>
+<body>
+<h1>Insert region</h1>
+
+<div class="form-container">
+    <form action="http://localhost:8080/region" method="post" id="formRegion">
+        <div class="form-group">
+            <label for="inpCode">Kode</label>
+            <input
+                    type="text"
+                    name="kode"
+                    class="inputfield"
+                    placeholder="eks. 7358"
+                    id="inpCode"
+                    required>
+        </div>
+        <div class="form-group">
+            <label class="form-lab" for="inpName">Navn</label>
+            <input
+                    type="text"
+                    name="navn"
+                    class="inputfield"
+                    placeholder="eks. Gerlev"
+                    id="inpName"
+                    required>
+        </div>
+        <div class="form-group">
+            <label class="form-lab" for="inpHref">Href</label>
+            <input
+                    type="text"
+                    name="href"
+                    class="inputfield"
+                    placeholder="https://www.roskilde.dk/da-dk/forside/"
+                    id="inpHref"
+                    required>
+        </div>
+        <button type="submit" title="Gem">Opret</button>
+    </form>
+</div>
+
+</body>
+<script src ="js/formregion.js"></script>
+
+</html>
