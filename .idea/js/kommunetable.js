@@ -32,8 +32,8 @@ async function fetchKommuner() {
                     <th>Kode</th>
                     <th>Navn</th>
                     <th>Href</th>
-                    <th>Region Kode</th>
-                    <th>Region Navn</th>
+                    <th>Photo</th>
+                    <th>Regioner</th>
                 </tr>
             `;
 
@@ -67,8 +67,8 @@ function sortAndDisplayKommuner() {
             <th>Kode</th>
             <th>Navn</th>
             <th>Href</th>
-            <th>Region Kode</th>
-            <th>Region Navn</th>
+            <th>Photo</th>
+            <th>Regioner</th>
         </tr>
     `;
     // Recreate the table rows after sorting
@@ -99,6 +99,19 @@ function createTable(kommune) {
     cell.innerHTML = kommune.href;
     cell.style.width = "15%";
 
+    // Vis foto
+    cell = row.insertCell(cellCount++);
+    if (kommune.photo) {
+        const img = document.createElement('img');
+        img.src = kommune.photo; // Her skal du sikre dig, at kommune.photo indeholder en URL
+        img.alt = 'Photo of ' + kommune.navn;
+        img.style.width = "100px"; // Justér størrelsen på billedet, hvis nødvendigt
+        cell.appendChild(img);
+    } else {
+        cell.innerHTML = 'No photo'; // Hvis ingen billede findes
+    }
+    cell.style.width = "15%";
+
     cell = row.insertCell(cellCount++)
     const dropdown = document.createElement('select');
     dropdown.id = "ddRegion" + kommune.kode;
@@ -114,6 +127,13 @@ function createTable(kommune) {
         element.region = reg;
         dropdown.append(element);
     });
+    if (kommune.region && kommune.region.kode) {
+        Array.from(dropdown.options).forEach(option => {
+            if (option.value == kommune.region.kode) {
+                option.selected = true;
+            }
+        });
+    }
     cell.appendChild(dropdown);
 
     cell = row.insertCell(cellCount++);
