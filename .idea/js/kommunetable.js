@@ -1,4 +1,6 @@
-import { fetchAnyUrl, restDelete } from "./modulejson.js";
+import { fetchAnyUrl, restDelete, fetchRegioner } from "./modulejson.js";
+
+let regMap = new Map()
 
 console.log("er i kommunetable");
 
@@ -12,21 +14,29 @@ let displayedKommuneCodes = new Set();
 
 async function fetchKommuner() {
     try {
+        regMap = await fetchRegioner(); // Sørger for at regionMap er fyldt før kommuner hentes
+        console.log("Efter fetchRegioner(), regionMap:", Array.from(regMap.entries()));
+
+        if (regMap.size === 0) {
+            console.error("Fejl: regionMap er stadig tom efter fetchRegioner()!");
+        return;
+        }
+
+        const urlKommune = "http://localhost:8080/kommuner";
         kommuner = await fetchAnyUrl(urlKommune);
+        console.log("Hentede kommuner:", kommuner);
 
         if (kommuner) {
-
             tblKommuner.innerHTML = `
-        <tr>
-            <th>Kode</th>
-            <th>Navn</th>
-            <th>Href</th>
-            <th>Region Kode</th>
-            <th>Region Navn</th>
-        </tr>
-    `;
+                <tr>
+                    <th>Kode</th>
+                    <th>Navn</th>
+                    <th>Href</th>
+                    <th>Region Kode</th>
+                    <th>Region Navn</th>
+                </tr>
+            `;
 
-            // Create table rows for each unique kommune
             kommuner.forEach(createTable);
         } else {
             alert("Fejl ved kald til backend url=" + urlKommune + " vil du vide mere så kig i Console");
@@ -72,6 +82,10 @@ function createTable(kommune) {
     let row = tblKommuner.insertRow(rowCount);
     let cell = row.insertCell(cellCount++);
 
+
+    console.log("Region map i createTable()", Array.from(regMap.entries()));
+
+
     row.id = kommune.kode;
 
     cell.innerHTML = kommune.kode;
@@ -85,11 +99,22 @@ function createTable(kommune) {
     cell.innerHTML = kommune.href;
     cell.style.width = "15%";
 
-    cell = row.insertCell(cellCount++);
-    cell.innerHTML = kommune.region.kode;
+    cell = row.insertCell(cellCount++)
+    const dropdown = document.createElement('select');
+    dropdown.id = "ddRegion" + kommune.kode;
 
-    cell = row.insertCell(cellCount++);
-    cell.innerHTML = kommune.region.navn;
+    if (regMap.size === 0) {
+        console.error("Region map is empty when creating dropdown");
+    }
+
+    regMap.forEach(reg => {
+        const element = document.createElement('option');
+        element.textContent = reg.navn;
+        element.value = reg.kode;
+        element.region = reg;
+        dropdown.append(element);
+    });
+    cell.appendChild(dropdown);
 
     cell = row.insertCell(cellCount++);
     const pbDelete = document.createElement("input");
@@ -103,6 +128,7 @@ function createTable(kommune) {
     };
     console.log(row);
 }
+
 
 // Fetch kommuner when the "Hent Kommuner" button is clicked
 pbCreateKommuneTable.addEventListener("click", fetchKommuner);
